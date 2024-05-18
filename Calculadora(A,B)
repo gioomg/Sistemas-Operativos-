@@ -1,0 +1,8 @@
+def calcular_area(base,altura):
+    return base * altura
+
+base=5
+altura=10 
+    
+area= calcular_area(base,altura)
+print("El valor del area es: ",area)
