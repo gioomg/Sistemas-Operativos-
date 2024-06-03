@@ -1,0 +1,183 @@
+import threading as thr
+import time
+from random import randint
+
+MIN_SLEEP_TIME = 2
+MAX_SLEEP_TIME = 10
+MIN_CLIENTES = 5
+MAX_CLIENTES = 20
+MIN_SALDO = 3000
+MAX_SALDO = 45000
+CLIENTES_SIMULTANEOS = 5
+
+semaforo = thr.Semaphore(CLIENTES_SIMULTANEOS)
+
+class Cliente:
+    def __init__(self, numCuenta:str):
+        self.__numCuenta = numCuenta
+        self.__saldo = float(randint(MIN_SALDO, MAX_SALDO))
+        self.__operacion = randint(1, 3)
+
+    def setSaldo(self, saldo:float):
+        self.__saldo = saldo 
+
+    def getSaldo(self):
+        return self.__saldo
+    
+    def getNumCuenta(self):
+        return self.__numCuenta
+    
+    def getOperacion(self):
+        return self.__operacion
+
+class Ejecutivo:
+    def __init__(self, id:int, nombre:str, paterno:str, materno:str):
+        self.id = id
+        self.__nombre:str = nombre
+        self.__paterno:str = paterno
+        self.__materno:str = materno
+    
+    def getNombre(self):
+        return self.__nombre
+    
+    def getPaterno(self):
+        return self.__paterno
+    
+    def getMaterno(self):
+        return self.__materno
+
+empleados = [
+    Ejecutivo(1, 'Juan', 'Perez', 'Nuñez'),
+    Ejecutivo(2, 'Laura', 'Ochoa', 'Maldonado'),
+    Ejecutivo(3, 'Juana', 'Santiago', 'Fernandez'),
+    Ejecutivo(4, 'Alejandro', 'Rodriguez', 'Sanches'),
+    Ejecutivo(5, 'Renata', 'Valentino', 'Hernandez')
+]
+
+class Ventanilla:
+    def __init__(self, id:int, ejecutivo:Ejecutivo):
+        self.id = id
+        self.__ejecutivo = ejecutivo
+        self.__disponible = bool(randint(0, 1))
+        
+    def __esperar(self):
+        sleepTime = randint(MIN_SLEEP_TIME, MAX_SLEEP_TIME)
+        time.sleep(sleepTime)
+        
+    def retirar(self, monto:float, cliente:Cliente):
+        with semaforo:
+            print("Operación: retiro")
+            self.__disponible = False
+            saldoActual = cliente.getSaldo()
+            print(f"Saldo actual: ${saldoActual}")
+            print(f"Monto a retirar: ${monto}")
+            cliente.setSaldo(saldoActual - monto)
+            nuevoSaldo = cliente.getSaldo()
+            print(f"Nuevo saldo: ${nuevoSaldo}")
+            self.__esperar()
+            self.__disponible = True
+
+    def depositar(self, monto:float, cliente:Cliente):
+        with semaforo:
+            print("Operación: depósito")
+            self.__disponible = False
+            saldoActual = cliente.getSaldo()
+            print(f"Saldo actual: ${saldoActual}")
+            print(f"Monto a depositar: ${monto}")
+            cliente.setSaldo(saldoActual + monto)
+            nuevoSaldo = cliente.getSaldo()
+            print(f"Nuevo saldo: ${nuevoSaldo}")
+            self.__esperar()
+            self.__disponible = True
+    
+    def consultar(self, cliente:Cliente):
+        with semaforo:
+            print("Operación: consulta")
+            self.__disponible = False
+            saldo = cliente.getSaldo()
+            print(f"Su saldo es: ${saldo}")
+            self.__esperar()
+            self.__disponible = True
+        
+    def isDisponible(self):
+        return self.__disponible
+    
+    def setDisponible(self, disponible:bool):
+        self.__disponible == disponible
+    
+    def getEjecutivo(self):
+        return self.__ejecutivo
+
+class ControladorVentanillas:
+    def __init__(self):
+        self.__ventanillas:list[Ventanilla] = []
+        cont = 1
+        for empleado in empleados:
+            self.__ventanillas.append(Ventanilla(cont, empleado))
+            cont += 1
+    
+    def getVentanillaDisponible(self):
+        with semaforo:
+            random = randint(0, len(self.__ventanillas) - 1)
+            while not self.__ventanillas[random].isDisponible():
+                random = randint(0, len(self.__ventanillas) - 1)
+            time.sleep(MIN_SLEEP_TIME)
+            return self.__ventanillas[random]
+    
+    def getVentanillas(self):
+        return self.__ventanillas
+    
+    def isActivo(self):
+        return self.__activo
+    
+    def setActivo(self, activo:bool):
+        self.__activo = activo
+
+def imprimirBanner():
+    print(("*" * 100) + "\n")
+    print("\t\t\t\tBIENVENIDO A BBVA EN LINEA\n")
+    print(("*" * 100) + "\n")
+
+if __name__ == '__main__':
+    clientes:list[Cliente] = []
+    random = randint(MIN_CLIENTES, MAX_CLIENTES)
+    
+    for i in range(0, random):
+        numCuenta = randint(1000, 9999)
+        clientes.append(Cliente(numCuenta))
+    
+    controlador = ControladorVentanillas()
+    ventanillas = controlador.getVentanillas()
+    
+    imprimirBanner()
+    
+    for ventanilla in ventanillas:
+        if ventanilla.isDisponible():
+            print(f"Ventanilla {ventanilla.id} disponible")
+        else:
+            print(f"Ventanilla {ventanilla.id} no disponible")
+    print("")
+    
+    for cliente in clientes:
+        ventanilla = controlador.getVentanillaDisponible()
+        print(f"Ventanilla {ventanilla.id} asignada a cliente {cliente.getNumCuenta()}")
+        operacion = cliente.getOperacion()
+        
+        if operacion == 1:
+            monto = randint(1, cliente.getSaldo())
+            retiro = thr.Thread(target = ventanilla.retirar, args = (monto, cliente))
+            retiro.start()
+            retiro.join()
+        elif operacion == 2:
+            monto = randint(1, cliente.getSaldo())
+            deposito = thr.Thread(target = ventanilla.depositar, args = (monto, cliente))
+            deposito.start()
+            deposito.join()
+        elif operacion == 3:
+            consulta = thr.Thread(target = ventanilla.consultar, args = (cliente,))
+            consulta.start()
+            consulta.join()
+        
+        print("")
+            
+    
