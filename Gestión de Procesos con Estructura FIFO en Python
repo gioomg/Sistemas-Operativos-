@@ -1,0 +1,35 @@
+class Pila:
+    def __init__(self):
+        self.items = []
+
+    def esta_vacia(self):
+        return len(self.items) == 0
+
+    def agregar(self, item):
+        self.items.append(item)
+
+    def sacar(self):
+        if not self.esta_vacia():
+            return self.items.pop(0)
+        else:
+            return None
+
+# Creamos una instancia de la clase Pila
+pila_procesos = Pila()
+
+# Agregamos procesos a la pila
+pila_procesos.agregar("Proceso 1")
+pila_procesos.agregar("Proceso 2")
+pila_procesos.agregar("Proceso 3")
+
+# Sacamos procesos de la pila (FIFO)
+print("Procesos ejecutándose en orden de entrada:")
+while not pila_procesos.esta_vacia():
+    proceso_actual = pila_procesos.sacar()
+    print("Ejecutando:", proceso_actual)
+
+# Ejemplo de salida del código:
+# Procesos ejecutándose en orden de entrada:
+# Ejecutando: Proceso 1
+# Ejecutando: Proceso 2
+# Ejecutando: Proceso 3
