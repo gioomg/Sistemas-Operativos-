@@ -1,0 +1,60 @@
+class Stack:
+    def __init__(self, size):
+        self.arr = [None] * size  # Crear una lista para almacenar los elementos de la pila
+        self.capacity = size  # Tamaño máximo de la pila
+        self.top = -1  # Inicializar el índice superior (sin elementos)
+
+    def push(self, val):
+        """Agregar un elemento a la pila."""
+        if self.isFull():
+            print('¡Desbordamiento de la pila! Saliendo...')
+            exit(-1)
+        print(f'Insertando {val} en la pila...')
+        self.top += 1
+        self.arr[self.top] = val
+
+    def pop(self):
+        """Eliminar y devolver el elemento superior de la pila."""
+        if self.isEmpty():
+            print('¡Subdesbordamiento de la pila! Saliendo...')
+            exit(-1)
+        print(f'Eliminando {self.peek()} de la pila')
+        top = self.arr[self.top]
+        self.top -= 1
+        return top
+
+    def peek(self):
+        """Devolver el elemento superior de la pila sin eliminarlo."""
+        if self.isEmpty():
+            exit(-1)
+        return self.arr[self.top]
+
+    def size(self):
+        """Devolver el tamaño actual de la pila."""
+        return self.top + 1
+
+    def isEmpty(self):
+        """Comprobar si la pila está vacía."""
+        return self.size() == 0
+
+    def isFull(self):
+        """Comprobar si la pila está llena."""
+        return self.size() == self.capacity
+
+if __name__ == '__main__':
+    stack = Stack(3)
+    stack.push(1)  # Insertar 1 en la pila
+    stack.push(2)  # Insertar 2 en la pila
+    stack.pop()    # Eliminar el elemento superior (2)
+    stack.pop()    # Eliminar el elemento superior (1)
+    stack.push(3)  # Insertar 3 en la pila
+
+    print('El elemento superior es', stack.peek())
+    print('El tamaño de la pila es', stack.size())
+
+    stack.pop()    # Eliminar el elemento superior (3)
+
+    if stack.isEmpty():
+        print('La pila está vacía')
+    else:
+        print('La pila no está vacía')
