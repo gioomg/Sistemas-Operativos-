@@ -1,0 +1,38 @@
+# Implementación del algoritmo Round Robin
+
+# Definimos una lista de procesos con sus respectivos tiempos de ejecución
+procesos = [
+    {"nombre": "P1", "tiempo": 8},
+    {"nombre": "P2", "tiempo": 4},
+    {"nombre": "P3", "tiempo": 2},
+    {"nombre": "P4", "tiempo": 6}
+]
+
+# Quantum (tiempo de resolución)
+quantum = 3
+
+# Creamos una cola de procesos listos
+cola_listos = procesos.copy()
+
+# Inicializamos el tiempo total y el índice del proceso actual
+tiempo_total = 0
+indice_actual = 0
+
+# Ejecutamos los procesos en Round Robin
+while cola_listos:
+    proceso_actual = cola_listos[indice_actual]
+    if proceso_actual["tiempo"] > quantum:
+        # El proceso excede el quantum, se mueve al final de la cola
+        tiempo_total += quantum
+        proceso_actual["tiempo"] -= quantum
+        cola_listos.append(cola_listos.pop(indice_actual))
+    else:
+        # El proceso se ejecuta completamente
+        tiempo_total += proceso_actual["tiempo"]
+        cola_listos.pop(indice_actual)
+
+    # Actualizamos el índice del proceso actual
+    indice_actual = (indice_actual + 1) % len(cola_listos)
+
+# Imprimimos el tiempo total de ejecución
+print(f"Tiempo total de ejecución: {tiempo_total} unidades de tiempo")
