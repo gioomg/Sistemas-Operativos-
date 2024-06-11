@@ -1,0 +1,36 @@
+class Proceso:
+    def __init__(self, nombre, tiempo):
+        self.nombre = nombre  # Nombre del proceso
+        self.tiempo = tiempo  # Tiempo de ejecución restante
+
+def round_robin(procesos, quantum):
+    cola = procesos[:]  # Creamos una copia de la lista de procesos para no modificar la original
+    tiempo_total = 0  # Tiempo total de ejecución
+
+    print("Ejecutando procesos con Round Robin:")
+    while cola:
+        proceso_actual = cola.pop(0)  # Obtenemos el primer proceso de la cola
+        if proceso_actual.tiempo <= quantum:
+            tiempo_total += proceso_actual.tiempo
+            print(f"Ejecutando {proceso_actual.nombre} (Tiempo restante: {proceso_actual.tiempo})")
+        else:
+            tiempo_total += quantum
+            print(f"Ejecutando {proceso_actual.nombre} (Tiempo restante: {proceso_actual.tiempo})")
+            cola.append(Proceso(proceso_actual.nombre, proceso_actual.tiempo - quantum))
+
+    print(f"\nTiempo total de ejecución: {tiempo_total}")
+
+# Procesos de ejemplo
+proceso1 = Proceso("Proceso 1", 8)
+proceso2 = Proceso("Proceso 2", 4)
+proceso3 = Proceso("Proceso 3", 10)
+proceso4 = Proceso("Proceso 4", 6)
+
+# Lista de procesos
+procesos = [proceso1, proceso2, proceso3, proceso4]
+
+# Quantum
+quantum = 5
+
+# Ejecutamos el algoritmo Round Robin
+round_robin(procesos, quantum)
