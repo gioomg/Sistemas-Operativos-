@@ -1,0 +1,21 @@
+Crear una estructura de directorios y archivos:
+/proyecto
+readme.md
+/src
+main.py
+utils.py
+/data
+data.csv
+   /docs
+    manual.txt
+
+           mkdir -p proyecto/src proyecto/data proyecto/docs
+touch proyecto/readme.md proyecto/src/main.py proyecto/src/utils.py proyecto/data/data.csv proyecto/docs/manual.txt
+
+Modificar permisos de todos los archivos en proyecto para que sean ejecutables solo por el propietario: chmod -R 700 proyecto
+
+Cambiar el propietario del directorio proyecto y todo su contenido al usuario root: sudo chown -R root:root proyecto
+
+Elabora tu reporte de práctica de laboratorio
+
+Mi trabajo
